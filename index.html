@@ -370,5 +370,53 @@
             }
         }
     </script>
+        <!-- ... kode modal dan HTML sebelumnya ... -->
+
+    <script>
+        // FUNGSI 1: Modal interaksi (sudah ada sebelumnya)
+        function openModal(modalId) { document.getElementById(modalId).style.display = 'flex'; }
+        function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+        window.onclick = function(event) {
+            const modals = document.getElementsByClassName('modal');
+            for (let i = 0; i < modals.length; i++) {
+                if (event.target == modals[i]) modals[i].style.display = "none";
+            }
+        }
+
+        // FUNGSI 2: Menyambungkan Frontend ke Backend Node.js
+        async function fetchProducts() {
+            try {
+                // Memanggil API dari server.js yang sedang berjalan
+                const response = await fetch('http://localhost:5000/api/products');
+                const result = await response.json();
+
+                if (result.success) {
+                    const productGrid = document.querySelector('.product-grid');
+                    productGrid.innerHTML = ''; // Kosongkan grid sampel
+
+                    // Looping data dari database MySQL dan tampilkan ke HTML
+                    result.data.forEach(product => {
+                        const productCard = `
+                            <div class="product-card">
+                                <img src="https://via.placeholder.com/300x200" alt="${product.title}" class="product-img">
+                                <div class="product-info">
+                                    <div class="product-title">${product.title}</div>
+                                    <div class="product-price">Rp ${parseFloat(product.price).toLocaleString('id-ID')}</div>
+                                    <button class="btn-buy" onclick="openModal('paymentModal')">Beli Sekarang</button>
+                                </div>
+                            </div>
+                        `;
+                        productGrid.innerHTML += productCard;
+                    });
+                }
+            } catch (error) {
+                console.error("Gagal terhubung ke backend:", error);
+            }
+        }
+
+        // Jalankan fungsi saat halaman web pertama kali dibuka
+        document.addEventListener('DOMContentLoaded', fetchProducts);
+    </script>
+    
 </body>
 </html>
